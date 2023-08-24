@@ -1,0 +1,36 @@
+iam ,mahesh kuligod
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: my-statefulset
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+     name: voting-app-pod
+     app: demo-voting-app
+     #app: my-statefulset
+  serviceName: "my-statefulset"
+  template:
+    metadata:
+      labels:
+        name: voting-app-pod
+        app: demo-voting-app
+    spec:
+      containers:
+        - name: voting-app
+          image: kodekloud/examplevotingapp_vote:v1
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: efs-volume
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: efs-volume
+      spec:
+        accessModes: ["ReadWriteMany"]
+        storageClassName: "efs-sc"
+        resources:
+          requests:
+            storage: 5Gi
